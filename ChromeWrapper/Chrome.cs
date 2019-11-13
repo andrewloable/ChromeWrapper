@@ -23,11 +23,27 @@ namespace ChromeWrapper
             startInfo.WindowStyle = ProcessWindowStyle.Normal;
             startInfo.FileName = chromePath;
             startInfo.Arguments = argString;
+            startInfo.RedirectStandardError = true;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardInput = true;
             process.StartInfo = startInfo;
+            process.OutputDataReceived += Process_OutputDataReceived;
+            process.ErrorDataReceived += Process_ErrorDataReceived;
             process.Start();
             if (waitExit)
                 process.WaitForExit();
         }
+
+        private static void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            Console.WriteLine($"** Error {e.Data}");
+        }
+
+        private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            Console.WriteLine($"{e.Data}");
+        }
+
         /// <summary>
         /// Returns all possible common locations of google chrome or chromium
         /// </summary>
@@ -127,7 +143,8 @@ namespace ChromeWrapper
                 "--safebrowsing-disable-auto-update",
                 "--enable-automation",
                 "--password-store=basic",
-                "--use-mock-keychain"
+                "--use-mock-keychain",
+                "--remote-debuggin-port=0"
             };
 
             return retval;
