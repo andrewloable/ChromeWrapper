@@ -7,13 +7,15 @@ namespace ChromeWrapper
 {
     public class UI
     {
-        public static void New(string url, int width, int height, bool waitForExit = false, List<string> customArgs = null)
+        public static void New(string url, int width, int height, bool kioskMode = false, List<string> customArgs = null)
         {
             if (string.IsNullOrWhiteSpace(url))
                 url = "data:text/html,<html></html>";
 
             List<string> args = Chrome.DefaultChromeArgs();
-            args.Add($"-app=\"data:text/html,<html><body><script>window.resizeTo({width},{height});window.location='{url}';</script></body></html>\"");
+
+            args.Add(GenerateLoadScript(url, width, height, kioskMode));
+
             if (customArgs != null)
                 args.AddRange(customArgs);
             var chromeLocation = Chrome.LocateChrome();
@@ -29,7 +31,27 @@ namespace ChromeWrapper
                     Process.Start("xdg-open", chromeLink);
             }
             else
-                Chrome.NewChromeWithArgs(chromeLocation, args, waitForExit);
+                Chrome.NewChromeWithArgs(chromeLocation, args);
+
+            
+        }
+
+        private static string GenerateLoadScript(string url, int width, int height, bool kioskMode = false)
+        {
+            if (kioskMode)
+            {
+                CloseRunningChromeInstances();
+                return $"--kiosk {url}";
+            }                
+
+            return $"-app=\"data:text/html,<html><body><script>window.resizeTo({width},{height});window.location='{url}';</script></body></html>\"";
+        }
+
+        private static void CloseRunningChromeInstances()
+        {
+            Process[] chromeInstances = Process.GetProcessesByName("chrome");
+            foreach (var p in chromeInstances)
+                p.Kill();
         }
     }
 }
