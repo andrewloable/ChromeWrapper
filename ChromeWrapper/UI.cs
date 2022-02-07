@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace ChromeWrapper
 {
     public class UI
     {
-        public static void New(string url, int width, int height, bool kioskMode = false, List<string> customArgs = null)
+        public static void New(string url, int width, int height, bool kioskMode = false, string tempdir = "chromewrapper", List<string> customArgs = null)
         {
             if (string.IsNullOrWhiteSpace(url))
                 url = "data:text/html,<html></html>";
@@ -18,6 +19,8 @@ namespace ChromeWrapper
 
             if (customArgs != null)
                 args.AddRange(customArgs);
+            string tmppath = Path.Combine(Path.GetTempPath(), tempdir);
+            args.Add($"--user-data-dir={tmppath}");
             var chromeLocation = Chrome.LocateChrome();
             if (string.IsNullOrWhiteSpace(chromeLocation))
             {

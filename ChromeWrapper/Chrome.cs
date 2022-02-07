@@ -128,7 +128,6 @@ namespace ChromeWrapper
                 "--disable-client-side-phishing-detection",
                 "--disable-default-apps",
                 "--disable-dev-shm-usage",
-                "--disable-infobars",
                 "--disable-extensions",
                 "--disable-features=site-per-process",
                 "--disable-hang-monitor",
@@ -141,7 +140,6 @@ namespace ChromeWrapper
                 "--metrics-recording-only",
                 "--no-first-run",
                 "--safebrowsing-disable-auto-update",
-                "--enable-automation",
                 "--password-store=basic",
                 "--use-mock-keychain",
                 "--remote-debuggin-port=0"
